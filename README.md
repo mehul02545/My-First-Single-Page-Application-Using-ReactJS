@@ -31,7 +31,7 @@ Setup Environment Variables
 
 ```bash
    Set REACT_APP_API_KEY=
-   (The key is shared in submission text)
+   The key is shared in submission text
  ```
 
  Start the server
