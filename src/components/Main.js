@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import XMLdata from '../assets/db.xml';
 import XMLParser from 'react-xml-parser';
-import axios from 'axios';
+
+
 
 class Main extends Component {
   constructor(props) {
@@ -15,28 +16,28 @@ class Main extends Component {
     this.getXmlData();
   }
 
-  getXmlData() {
-    axios
-      .get(XMLdata, {
-        'Content-Type': 'application/xml; charset=utf-8',
-      })
-      .then((response) => {
-        const xmlToJson = new XMLParser().parseFromString(response.data);
-        const blogData = xmlToJson.children.map((post) => {
-          const postData = {};
-          post.children.forEach((data) => {
-            postData[data.name] = data.value;
+    getXmlData() {
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = () => {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+          const xmlText = xmlhttp.responseText;
+          const xmlToJson = new XMLParser().parseFromString(xmlText);
+          const blogData = xmlToJson.children.map((post) => {
+            const postData = {};
+            post.children.forEach((data) => {
+              postData[data.name] = data.value;
+            });
+            postData.expanded = false; 
+            return postData;
           });
-          postData.expanded = false; 
-          return postData;
-        });
-        this.setState({ blogData });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
+          this.setState({ blogData });
+        }
+      };
+      xmlhttp.open("GET", XMLdata, true);
+      xmlhttp.setRequestHeader('Content-Type', 'application/xml; charset=utf-8');
+      xmlhttp.send();
+    }
+  
   handleCardClick = (index) => {
     const { blogData } = this.state;
     const updatedBlogData = [...blogData];
@@ -87,3 +88,4 @@ class Main extends Component {
 }
 
 export default Main;
+
